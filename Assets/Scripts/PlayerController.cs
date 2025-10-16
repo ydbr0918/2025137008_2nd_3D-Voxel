@@ -3,32 +3,39 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 5f; // 이동 속도
+    public float moveSpeed = 5f; 
     private Rigidbody rb;
-    private Vector3 moveDirection;
+
+    private Vector3 forwardDir; 
+    private Vector3 moveInput;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        forwardDir = transform.forward;
     }
 
     void Update()
     {
-        // 입력 받기 (WASD)
-        float moveX = Input.GetAxisRaw("Horizontal"); // A(-1), D(+1)
-        float moveZ = Input.GetAxisRaw("Vertical");   // S(-1), W(+1)
-
-        // 방향 설정
-        moveDirection = new Vector3(moveX, 0f, moveZ).normalized;
+        float z = Input.GetAxisRaw("Horizontal"); 
+        float x = Input.GetAxisRaw("Vertical");   
+        Vector3 rightDir = Vector3.Cross(Vector3.up, -forwardDir);
+        moveInput = (forwardDir * z + rightDir * x).normalized;
     }
 
     void FixedUpdate()
     {
-        // 이동
-        rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
+        if (moveInput.magnitude > 0.1f)
+        {
+            // 이동
+            rb.MovePosition(rb.position + moveInput * moveSpeed * Time.fixedDeltaTime);
+
+            // 이동 방향 바라보기 (회전)
+            Quaternion targetRotation = Quaternion.LookRotation(moveInput);
+            rb.rotation = Quaternion.Slerp(rb.rotation, targetRotation, 0.15f);
+        }
     }
 }
 
