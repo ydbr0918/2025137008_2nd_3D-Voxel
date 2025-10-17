@@ -36,7 +36,7 @@ public class FirstPersonMouseLook : MonoBehaviour
             float pitchDelta = -my * mouseSensitivity * Time.deltaTime;
             camSwitch.fpPitch = Mathf.Clamp(camSwitch.fpPitch + pitchDelta, minPitch, maxPitch);
 
-            // 커서 잠금
+            // 커서 잠금 & 숨김 (FPS 스타일)
             if (Cursor.lockState != CursorLockMode.Locked)
             {
                 Cursor.lockState = CursorLockMode.Locked;
@@ -50,6 +50,21 @@ public class FirstPersonMouseLook : MonoBehaviour
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
+            }
+        }
+
+        // (선택) ESC로 잠금 해제/복귀 토글
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (Cursor.lockState == CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else if (camSwitch != null && camSwitch.IsFirstPerson)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
             }
         }
     }
