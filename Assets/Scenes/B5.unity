@@ -638,7 +638,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 664114184}
   camSwitch: {fileID: 0}
-  mouseSensitivity: 120
+  mouseSensitivity: 200
   minPitch: -80
   maxPitch: 80
 --- !u!1 &687663864
