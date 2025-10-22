@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using TMPro;
 
 public class PickupItem : MonoBehaviour
@@ -7,13 +7,13 @@ public class PickupItem : MonoBehaviour
     public string playerTag = "Player";
     public KeyCode pickupKey = KeyCode.F;
 
-    [Header("Prompt UI (º±≈√)")]
-    public CanvasGroup promptGroup;     // [F] »πµÊ ∆–≥Œ (CanvasGroup)
-    public TMP_Text promptText;         // øπ: "[F] »πµÊ"
+    [Header("Prompt UI (ÏÑ†ÌÉù)")]
+    public CanvasGroup promptGroup;     // [F] ÌöçÎìù Ìå®ÎÑê (CanvasGroup)
+    public TMP_Text promptText;         // Ïòà: "[F] ÌöçÎìù"
     public float promptFade = 0.2f;
 
     [Header("Attach On Pickup")]
-    public Transform attachParent;      // ø¿∏•º’ ∫ª(∂«¥¬ º“ƒœ)
+    public Transform attachParent;      // Ïò§Î•∏ÏÜê Î≥∏(ÎòêÎäî ÏÜåÏºì)
     public Vector3 localPos, localEuler, localScale = Vector3.one;
 
     System.Action _onPicked;
@@ -24,7 +24,7 @@ public class PickupItem : MonoBehaviour
     void Start()
     {
         if (promptGroup) { promptGroup.alpha = 0f; promptGroup.interactable = false; promptGroup.blocksRaycasts = false; }
-        if (promptText && string.IsNullOrEmpty(promptText.text)) promptText.text = "[F] »πµÊ";
+        if (promptText && string.IsNullOrEmpty(promptText.text)) promptText.text = "[F] ÌöçÎìù";
     }
 
     void OnTriggerEnter(Collider other)
@@ -49,20 +49,24 @@ public class PickupItem : MonoBehaviour
         if (!_inside) return;
         if (Input.GetKeyDown(pickupKey))
         {
-            // º’ø° ∫Ÿ¿Ã±‚
+            // ÏÜêÏóê Î∂ôÏù¥Í∏∞
             if (attachParent)
             {
                 transform.SetParent(attachParent);
                 transform.localPosition = localPos;
                 transform.localEulerAngles = localEuler;
                 transform.localScale = localScale;
-                // √Êµπ ∫Ò»∞º∫(ø…º«)
                 foreach (var c in GetComponentsInChildren<Collider>()) c.enabled = false;
                 var rb = GetComponent<Rigidbody>(); if (rb) rb.isKinematic = true;
             }
+
             ShowPrompt(false);
             _onPicked?.Invoke();
-            // æ∆¿Ã≈€¿ª æ¿ø°º≠ æ¯æ÷∞Ì, º’ø° µÁ ∫π¡¶∫ª¿ª æ≤∑¡∏È ø©±‚º≠ Destroy(gameObject) ¥ÎΩ≈ »∞º∫/∫Ò»∞º∫ ∑Œ¡˜¿∏∑Œ πŸ≤Ÿººø‰.
+
+            
+            var shooter = attachParent ? attachParent.GetComponentInChildren<GunShooter>(true)
+                                       : GetComponentInChildren<GunShooter>(true);
+            if (shooter) shooter.enabled = true;  
         }
     }
 

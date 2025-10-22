@@ -1,57 +1,75 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 using System.Collections;
 
 public class TutorialController : MonoBehaviour
 {
-    [Header("Overlay (°ËÀº È­¸é)")]
-    public CanvasGroup overlay;        // È­¸é ÀüÃ¼¸¦ µ¤´Â Image + CanvasGroup (Alpha 1·Î ½ÃÀÛ)
+    [Header("Overlay (ê²€ì€ í™”ë©´)  â€” ë¹„ì›Œë‘ë©´ ìë™ íƒìƒ‰")]
+    public CanvasGroup overlay;              // í™”ë©´ì„ ë®ëŠ” Image+CanvasGroup (Alpha 1ë¡œ ì‹œì‘ ê¶Œì¥)
     public float overlayFadeSeconds = 3f;
 
-    [Header("Text UI (³×°¡ ¸¸µç ÅØ½ºÆ® »óÀÚ)")]
-    public TutorialUI ui;              // À§¿¡¼­ ¸¸µç TutorialUI (textBox/textField ¿¬°áÇØµĞ)
+    [Header("Text UI (í…ìŠ¤íŠ¸ ìƒì) â€” ë¹„ì›Œë‘ë©´ ìë™ íƒìƒ‰")]
+    public TutorialUI ui;                    // TutorialUI(textBox/textField ì—°ê²°ë˜ì–´ ìˆì–´ì•¼ í•¨)
     public float uiFadeSeconds = 0.35f;
 
-    [Header("ÃÑ ¾ÆÀÌÅÛ")]
-    public PickupItem gunItem;         // ÃÑ ¾ÆÀÌÅÛ(Trigger). ¿©±â ºÙ¾îÀÖÀ½
-    public Transform rightHand;        // ¿À¸¥¼Õ Transform(attach¿ë) - PickupItem¿¡µµ °°Àº °É ³ÖÀ» °Í
+    [Header("ì´ ì•„ì´í…œ (ì„ íƒ) â€” ì—†ìœ¼ë©´ í•´ë‹¹ ë‹¨ê³„ ê±´ë„ˆëœ€")]
+    public PickupItem gunItem;               // ì´ ì•„ì´í…œ(Trigger)
+    public Transform rightHand;              // ë¶™ì¼ ì†(ì—†ìœ¼ë©´ attachParentëŠ” ê¸°ì¡´ ì„¤ì • ì‚¬ìš©)
 
-    [Header("ÀÏ½ÃÁ¤Áö UI")]
-    public GameObject pausePanel;      // ESC ´­·¶À» ¶§ ÄÑÁú ÆĞ³Î(ºñÈ°¼ºÀ¸·Î ½ÃÀÛ)
+    [Header("ì¼ì‹œì •ì§€ UI (ì„ íƒ)")]
+    public GameObject pausePanel;            // ESC ì‹œ ì—´ë¦´ íŒ¨ë„(ë¹„í™œì„± ì‹œì‘)
     public string mainMenuScene = "MainMenu";
 
     bool paused = false;
     bool canPause = false;
 
-    // WASD °¢ Å° 1È¸¾¿ ´­·¶´ÂÁö ÃßÀû
+    // ì…ë ¥ í”Œë˜ê·¸
     bool w, a, s, d;
     bool viewSwitched, sprinted, shot, picked;
 
-    enum Step
-    {
-        FadeIn,
-        Welcome,
-        MoveWASD,
-        SwitchView,
-        Sprint,
-        PickupGun,
-        Shoot,
-        FinalToast,
-        Done
-    }
+    enum Step { FadeIn, Welcome, MoveWASD, SwitchView, Sprint, PickupGun, Shoot, FinalToast, Done }
     Step step = Step.FadeIn;
+
+    void Awake()
+    {
+        // ìë™ ì—°ê²° (ë¹„ì–´ìˆìœ¼ë©´ ì°¾ì•„ë³´ê¸°)
+        if (!overlay)
+        {
+            // ì´ë¦„ìœ¼ë¡œ ë¨¼ì € ì°¾ê³ , ì—†ìœ¼ë©´ Canvas í•˜ìœ„ì˜ ê°€ì¥ í° CanvasGroup ì¤‘ Imageê°€ ë¶™ì€ ê²ƒì„ ì‚¬ìš©
+            var found = GameObject.Find("Overlay");
+            if (found) overlay = found.GetComponent<CanvasGroup>();
+            if (!overlay)
+            {
+                CanvasGroup best = null;
+                foreach (var cg in FindObjectsOfType<CanvasGroup>(true))
+                {
+                    if (!cg.GetComponent<UnityEngine.UI.Image>()) continue;
+                    if (!best || Area(cg.GetComponent<RectTransform>()) > Area(best.GetComponent<RectTransform>()))
+                        best = cg;
+                }
+                overlay = best;
+            }
+        }
+
+        if (!ui) ui = FindObjectOfType<TutorialUI>(true);
+        if (!gunItem) gunItem = FindObjectOfType<PickupItem>(true);
+        if (!pausePanel)
+        {
+            var go = GameObject.Find("PausePanel");
+            if (go) pausePanel = go;
+        }
+    }
 
     void Start()
     {
-        // ÃÊ±âÈ­
+        // ì´ˆê¸° ìƒíƒœ ì…‹ì—…(ìˆìœ¼ë©´ ì“°ê³ , ì—†ìœ¼ë©´ ê±´ë„ˆë›°ë„ë¡)
         if (overlay) { overlay.alpha = 1f; overlay.interactable = true; overlay.blocksRaycasts = true; }
         if (pausePanel) pausePanel.SetActive(false);
 
-        // ÃÑ ¾ÆÀÌÅÛ ¿Ï·á Äİ¹é ¿¬°á
+        // ì´ ì•„ì´í…œ ì™„ë£Œ ì½œë°± ì—°ê²°(ìˆì„ ë•Œë§Œ)
         if (gunItem)
         {
-            if (rightHand) { gunItem.attachParent = rightHand; } // ÀÎ½ºÆåÅÍ¿¡¼­ ÀÌ¹Ì ³Ö¾úÀ¸¸é »ı·«
+            if (rightHand) { gunItem.attachParent = rightHand; }
             gunItem.SetOnPicked(() => { picked = true; });
         }
 
@@ -60,14 +78,14 @@ public class TutorialController : MonoBehaviour
 
     void Update()
     {
-        // ESC ÀÏ½ÃÁ¤Áö
-        if (canPause && Input.GetKeyDown(KeyCode.Escape))
+        // ESC ì¼ì‹œì •ì§€ (íŒ¨ë„ì´ ìˆì–´ì•¼ë§Œ ë™ì‘)
+        if (pausePanel && canPause && Input.GetKeyDown(KeyCode.Escape))
         {
             if (paused) Resume();
             else Pause();
         }
 
-        // ÀÔ·Â ÃßÀû
+        // ì…ë ¥ ì¶”ì 
         if (step == Step.MoveWASD || step > Step.MoveWASD)
         {
             if (Input.GetKeyDown(KeyCode.W)) w = true;
@@ -77,11 +95,11 @@ public class TutorialController : MonoBehaviour
         }
         if (step == Step.SwitchView || step > Step.SwitchView)
         {
-            if (Input.GetKeyDown(KeyCode.V)) viewSwitched = true; // ½ÇÁ¦ ½ÃÁ¡ÀüÈ¯ ½ºÅ©¸³Æ®µµ µû·Î µ¿ÀÛÇÏµµ·Ï
+            if (Input.GetKeyDown(KeyCode.V)) viewSwitched = true;
         }
         if (step == Step.Sprint || step > Step.Sprint)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift)) sprinted = true; // ½ÇÁ¦ ´Ş¸®±â´Â Ä³¸¯ÄÁÆ®·Ñ·¯°¡ Ã³¸®
+            if (Input.GetKeyDown(KeyCode.LeftShift)) sprinted = true;
         }
         if (step == Step.Shoot || step > Step.Shoot)
         {
@@ -91,7 +109,14 @@ public class TutorialController : MonoBehaviour
 
     IEnumerator Run()
     {
-        // 1) °ËÀº È­¸é ¼­¼­È÷ »ç¶óÁü (3ÃÊ)
+        // í•„ìˆ˜ í™•ì¸: ui ì—†ìœ¼ë©´ ì§„í–‰ ë¶ˆê°€ â†’ ì¹œì ˆ ë¡œê·¸ í›„ ì¤‘ë‹¨
+        if (!ui)
+        {
+            Debug.LogError("[TutorialController] TutorialUIê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. Canvasì— TutorialUIë¥¼ ì¶”ê°€í•˜ê³  textBox/textFieldë¥¼ ì—°ê²°í•˜ì„¸ìš”.");
+            yield break;
+        }
+
+        // 1) ê²€ì€ í™”ë©´ í˜ì´ë“œì¸(overlayê°€ ì—†ìœ¼ë©´ ìŠ¤í‚µ)
         step = Step.FadeIn;
         if (overlay)
         {
@@ -105,55 +130,57 @@ public class TutorialController : MonoBehaviour
             overlay.alpha = 0f; overlay.interactable = false; overlay.blocksRaycasts = false;
         }
 
-        // 2) "Æ©Åä¸®¾ó¿¡ ¿Â°É È¯¿µÇØ."
+        // 2) í™˜ì˜ ë¬¸êµ¬
         step = Step.Welcome;
-        yield return ui.ShowText("Æ©Åä¸®¾ó¿¡ ¿Â°É È¯¿µÇØ.", uiFadeSeconds);
-        // Å¬¸¯À¸·Î Áï½Ã ´ÙÀ½(¿øÇÏ¸é WaitForClick ÄÚ·çÆ¾À» ¸¸µé¾î »ç¿ë °¡´É)
+        yield return ui.ShowText("íŠœí† ë¦¬ì–¼ì— ì˜¨ê±¸ í™˜ì˜í•´.", uiFadeSeconds);
         yield return WaitForClick();
 
-        // 3) "WASD¸¦ ´­·¯..."
+        // 3) WASD
         step = Step.MoveWASD;
-        yield return ui.ShowText("WASD¸¦ ´­·¯ ÇÃ·¹ÀÌ¾î¸¦ Á¶ÀÛÇØº¸ÀÚ.", uiFadeSeconds);
-        yield return ui.HideText(uiFadeSeconds); // ¹®±¸ ¼û±â°í ½ÇÁ¦ ÀÔ·Â ´ë±â
+        yield return ui.ShowText("WASDë¥¼ ëˆŒëŸ¬ í”Œë ˆì´ì–´ë¥¼ ì¡°ì‘í•´ë³´ì.", uiFadeSeconds);
+        yield return ui.HideText(uiFadeSeconds);
         w = a = s = d = false;
         while (!(w && a && s && d)) yield return null;
 
-        // 4) "V¸¦ ´­·¯ ½ÃÁ¡À»..."
+        // 4) V ì „í™˜
         step = Step.SwitchView;
-        yield return ui.ShowText("V¸¦ ´­·¯ 1¡¤3ÀÎÄªÀ» ¹Ù²ãº¸ÀÚ.", uiFadeSeconds);
+        yield return ui.ShowText("Vë¥¼ ëˆŒëŸ¬ 1Â·3ì¸ì¹­ì„ ë°”ê¿”ë³´ì.", uiFadeSeconds);
         yield return ui.HideText(uiFadeSeconds);
         viewSwitched = false;
         while (!viewSwitched) yield return null;
 
-        // 5) "Shift¸¦ ´­·¯ ´Ş·Áº¸ÀÚ."
+        // 5) Shift ë‹¬ë¦¬ê¸°
         step = Step.Sprint;
-        yield return ui.ShowText("Shift¸¦ ´­·¯ ´Ş·Áº¸ÀÚ.", uiFadeSeconds);
+        yield return ui.ShowText("Shiftë¥¼ ëˆŒëŸ¬ ë‹¬ë ¤ë³´ì.", uiFadeSeconds);
         yield return ui.HideText(uiFadeSeconds);
         sprinted = false;
         while (!sprinted) yield return null;
 
-        // 6) "F¸¦ ´­·¯ ÃÑ ¾ÆÀÌÅÛÀ» ÁÖ¿öº¸ÀÚ." + [F] È¹µæ ÇÁ·ÒÇÁÆ®´Â PickupItemÀÌ Ç¥½Ã
-        step = Step.PickupGun;
-        yield return ui.ShowText("F¸¦ ´­·¯ ÃÑ ¾ÆÀÌÅÛÀ» ÁÖ¿öº¸ÀÚ.", uiFadeSeconds);
-        yield return ui.HideText(uiFadeSeconds);
-        picked = false;
-        while (!picked) yield return null;  // PickupItem¿¡¼­ picked=true
+        // 6) Fë¡œ ì´ ì¤ê¸° (ì´ ì•„ì´í…œì´ ì—†ìœ¼ë©´ ì´ ë‹¨ê³„ ê±´ë„ˆëœ€)
+        if (gunItem)
+        {
+            step = Step.PickupGun;
+            yield return ui.ShowText("Fë¥¼ ëˆŒëŸ¬ ì´ ì•„ì´í…œì„ ì£¼ì›Œë³´ì.", uiFadeSeconds);
+            yield return ui.HideText(uiFadeSeconds);
+            picked = false;
+            while (!picked) yield return null;
+        }
 
-        // 7) "ÁÂÅ¬¸¯(LMB)À¸·Î »ç°İÇØºÁ."
+        // 7) ì‚¬ê²©
         step = Step.Shoot;
-        yield return ui.ShowText("ÁÂÅ¬¸¯(LMB)À¸·Î »ç°İÇØºÁ.", uiFadeSeconds);
+        yield return ui.ShowText("ì¢Œí´ë¦­(LMB)ìœ¼ë¡œ ì‚¬ê²©í•´ë´.", uiFadeSeconds);
         yield return ui.HideText(uiFadeSeconds);
         shot = false;
         while (!shot) yield return null;
 
-        // 8) ¸¶Áö¸· Åä½ºÆ® "ÀÌÁ¦ ½ÃÀÛÇØµµ µÉ °Í °°¾Æ." 3ÃÊ
+        // 8) ë§ˆì§€ë§‰ í† ìŠ¤íŠ¸
         step = Step.FinalToast;
-        yield return ui.ShowText("ÀÌÁ¦ ½ÃÀÛÇØµµ µÉ °Í °°¾Æ.", uiFadeSeconds);
+        yield return ui.ShowText("ì´ì œ ì‹œì‘í•´ë„ ë  ê²ƒ ê°™ì•„.", uiFadeSeconds);
         yield return new WaitForSeconds(3f);
         yield return ui.HideText(uiFadeSeconds);
 
-        // ³¡. ÀÌÁ¦ ESC·Î ÀÏ½ÃÁ¤Áö °¡´É
-        canPause = true;
+        // ë â€” ì´ì œ ESC í—ˆìš©
+        canPause = pausePanel != null;
         step = Step.Done;
     }
 
@@ -162,21 +189,27 @@ public class TutorialController : MonoBehaviour
         while (!Input.GetMouseButtonDown(0)) yield return null;
     }
 
+    // ===== ì¼ì‹œì •ì§€ =====
     void Pause()
     {
+        if (!pausePanel) return;
         paused = true;
-        if (pausePanel) pausePanel.SetActive(true);
+        pausePanel.SetActive(true);
         Time.timeScale = 0f;
-        Cursor.visible = true; Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
     public void Resume()
     {
+        if (!pausePanel) return;
         paused = false;
-        if (pausePanel) pausePanel.SetActive(false);
+        pausePanel.SetActive(false);
         Time.timeScale = 1f;
-        Cursor.visible = false; Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
     public void OnClickContinue() => Resume();
+
     public void OnClickExit()
     {
         Time.timeScale = 1f;
@@ -201,5 +234,13 @@ public class TutorialController : MonoBehaviour
             if (sn == name) return true;
         }
         return false;
+    }
+
+    // í™”ë©´ í¬ê¸° ì¶”ì •ìš©
+    float Area(RectTransform rt)
+    {
+        if (!rt) return 0f;
+        var s = rt.rect.size;
+        return Mathf.Abs(s.x * s.y);
     }
 }
