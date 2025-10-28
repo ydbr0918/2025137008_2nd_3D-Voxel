@@ -3091,11 +3091,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerManager: {fileID: 198192589}
   elevatorManager: {fileID: 1457800541}
+  textBar: {fileID: 243851436}
+  characterIcon: {fileID: 0}
+  lockedText: "\uC7A0\uACA8\uC788\uB294\uAC83\uAC19\uC544"
+  holdSeconds: 1.5
   elevatorInteriorSceneName: InElevator
   nextStageSceneName: B4
   nextStageBuildIndex: -1
   rideSeconds: 5
   fadeSeconds: 0.35
+  extraDistanceCheck: 0
 --- !u!1 &827953992
 GameObject:
   m_ObjectHideFlags: 0
