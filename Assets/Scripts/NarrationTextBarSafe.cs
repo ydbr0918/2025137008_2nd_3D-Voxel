@@ -1,34 +1,60 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 
 public class NarrationTextBarSafe : MonoBehaviour
 {
-    [Header("UI (±âÁ¸ Ä³¸¯ÅÍ ´ë»çÃ¢ ¿¬°á)")]
-    public CanvasGroup barGroup;   // ÅØ½ºÆ® ¹Ù ÆĞ³Î(CanvasGroup)
-    public TMP_Text message;       // TMP ÅØ½ºÆ®
-    public Image portrait;         // Ä³¸¯ÅÍ ¾ÆÀÌÄÜ(Image)
+    [Header("UI (ê¸°ì¡´ ìºë¦­í„° ëŒ€ì‚¬ì°½ ì—°ê²°)")]
+    public CanvasGroup barGroup;   // í…ìŠ¤íŠ¸ ë°” íŒ¨ë„(CanvasGroup)
+    public TMP_Text message;       // TMP í…ìŠ¤íŠ¸
+    public Image portrait;         // ìºë¦­í„° ì•„ì´ì½˜(Image)
 
     [Header("Narration Icon Style")]
-    public bool hidePortraitForNarration = true;   // ³»·¹ÀÌ¼Ç ½Ã ¾ÆÀÌÄÜ ¼û±è
-    [Range(0f, 1f)] public float narrationPortraitAlpha = 0f; // ¼û±âÁö ¾ÊÀ» ¶§ Åõ¸íµµ
+    public bool hidePortraitForNarration = true;
+    [Range(0f, 1f)] public float narrationPortraitAlpha = 0f;
 
     [Header("Fade")]
     public float fadeSeconds = 0.2f;
 
     [Header("Mode")]
-    public bool timedMode = true;  // true: ÀÏÁ¤ ½Ã°£ ÈÄ ÀÚµ¿ ¼û±è, false: Sticky(¼öµ¿ ¼û±è)
+    public bool timedMode = true;   // true: ì¼ì • ì‹œê°„ í›„ ìë™ ìˆ¨ê¹€, false: Sticky
     public float holdSeconds = 1.5f;
+
+    [Header("Visibility Options")]
+    public bool autoHideOnStart = false;   // â˜… ì‹œì‘ ì‹œ ìë™ ìˆ¨ê¹€ ì—¬ë¶€(ê¸°ë³¸ êº¼ì§)
+    public bool deactivateOnHide = false;  // ìˆ¨ê¹€ ì‹œ GameObject ë¹„í™œì„±í™”
 
     Coroutine co;
 
-    // ¡Ú Awake/Start/OnEnable ¿¡¼­ ¾Æ¹« °Íµµ ÇÏÁö ¾Ê½À´Ï´Ù.
-    // => ±âÁ¸¿¡ ¶° ÀÖ´Â "Ã³À½ ´ë»ç"¸¦ Àı´ë °Çµå¸®Áö ¾ÊÀ½
+    void Awake()
+    {
+        // ëˆ„ë½ ì°¸ì¡° ìë™ ë³´ì •
+        if (!barGroup) barGroup = GetComponentInChildren<CanvasGroup>(true);
+        if (!message) message = GetComponentInChildren<TMP_Text>(true);
+        if (!portrait) portrait = GetComponentInChildren<Image>(true);
+    }
+
+    void Start()
+    {
+        // â˜… ì²˜ìŒ ëŒ€ì‚¬ë¥¼ ë³´ì—¬ì•¼ í•œë‹¤ë©´ ì´ ì˜µì…˜ì„ êº¼ë‘ì„¸ìš”.
+        if (autoHideOnStart)
+        {
+            HideImmediate();
+        }
+        else
+        {
+            // ì‹œì‘ ì‹œ ë³´ì´ê²Œ ë‘˜ ë•Œ, í•„ìš”í•œ ê¸°ë³¸ í”Œë˜ê·¸ ì •ë¦¬
+            if (barGroup)
+            {
+                barGroup.blocksRaycasts = (barGroup.alpha > 0f);
+                barGroup.interactable = (barGroup.alpha > 0f);
+            }
+        }
+    }
 
     public void ShowCharacter(string line, Sprite icon = null, float? seconds = null)
     {
-        // ¾ÆÀÌÄÜ ¼¼ÆÃ(¾øÀ¸¸é ±âÁ¸ »óÅÂ À¯Áö)
         if (portrait)
         {
             if (icon) portrait.sprite = icon;
@@ -61,20 +87,29 @@ public class NarrationTextBarSafe : MonoBehaviour
     public void HideImmediate()
     {
         if (co != null) { StopCoroutine(co); co = null; }
-        if (barGroup) { barGroup.alpha = 0f; barGroup.blocksRaycasts = false; }
-        // ÅØ½ºÆ®¸¦ ²À Áö¿ì°í ½ÍÁö ¾Ê´Ù¸é ÁÖ¼® Ã³¸® °¡´É
+
+        if (barGroup)
+        {
+            barGroup.alpha = 0f;
+            barGroup.blocksRaycasts = false;
+            barGroup.interactable = false;
+        }
         if (message) message.text = "";
 
-        // ´ÙÀ½ Ä³¸¯ÅÍ ´ë»ç ´ëºñ ¾ÆÀÌÄÜ º¹¿ø(½ºÇÁ¶óÀÌÆ®°¡ ÀÖÀ¸¸é º¸ÀÌ±â)
         if (portrait)
         {
             portrait.enabled = (portrait.sprite != null);
             SetPortraitAlpha(1f);
         }
+
+        if (deactivateOnHide) gameObject.SetActive(false);
     }
 
     void ShowLine(string line, float? seconds)
     {
+        if (deactivateOnHide && !gameObject.activeSelf)
+            gameObject.SetActive(true);
+
         if (co != null) StopCoroutine(co);
         co = StartCoroutine(ShowCo(line, seconds));
     }
@@ -83,12 +118,15 @@ public class NarrationTextBarSafe : MonoBehaviour
     {
         if (message) message.text = line;
 
-        // Fade In (ÇöÀç ¾ËÆÄ¿¡¼­ 1±îÁö)
+        // Fade In
         if (barGroup)
         {
             float a0 = barGroup.alpha;
             float t = 0f;
-            barGroup.blocksRaycasts = false;
+
+            barGroup.blocksRaycasts = true;
+            barGroup.interactable = true;
+
             while (t < fadeSeconds)
             {
                 t += Time.deltaTime;
@@ -98,18 +136,16 @@ public class NarrationTextBarSafe : MonoBehaviour
             barGroup.alpha = 1f;
         }
 
-        // Sticky ¸ğµå¸é ¿©±â¼­ ³¡ (À¯Áö)
         if (!timedMode)
         {
             co = null;
             yield break;
         }
 
-        // Timed ¸ğµå¸é hold ÈÄ ÀÚµ¿ ¼û±è
         float hold = seconds.HasValue ? seconds.Value : holdSeconds;
         if (hold > 0f) yield return new WaitForSeconds(hold);
 
-        // Fade Out (ÇöÀç ¾ËÆÄ¿¡¼­ 0±îÁö)
+        // Fade Out
         if (barGroup)
         {
             float a0 = barGroup.alpha;
@@ -122,17 +158,18 @@ public class NarrationTextBarSafe : MonoBehaviour
             }
             barGroup.alpha = 0f;
             barGroup.blocksRaycasts = false;
+            barGroup.interactable = false;
         }
 
-        // ÇÊ¿ä ½Ã ÅØ½ºÆ® ºñ¿ì±â(¿øÄ¡ ¾ÊÀ¸¸é ÁÖ¼®)
         if (message) message.text = "";
 
-        // ¾ÆÀÌÄÜ º¹¿ø
         if (portrait)
         {
             portrait.enabled = (portrait.sprite != null);
             SetPortraitAlpha(1f);
         }
+
+        if (deactivateOnHide) gameObject.SetActive(false);
 
         co = null;
     }
