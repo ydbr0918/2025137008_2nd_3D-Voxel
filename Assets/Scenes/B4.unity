@@ -642,18 +642,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 258366779}
   m_CullTransparentMesh: 1
---- !u!23 &321416805 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -5276527098264995424, guid: 572c7e001d6dc4d4f80c26e1bb513a22,
-    type: 3}
-  m_PrefabInstance: {fileID: 2130944200}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &326028849 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 3216712716400191227, guid: 572c7e001d6dc4d4f80c26e1bb513a22,
-    type: 3}
-  m_PrefabInstance: {fileID: 2130944200}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,12 +809,10 @@ MonoBehaviour:
   - {fileID: 2073140232}
   - {fileID: 1090755645}
   - {fileID: 360913829}
-  - {fileID: 321416805}
   - {fileID: 601278156}
   - {fileID: 1630427535}
   - {fileID: 1928010207}
   - {fileID: 1866840663}
-  - {fileID: 326028849}
   - {fileID: 2138075500}
   - {fileID: 502657197}
   wallMask:
@@ -2258,7 +2244,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1.5
+  MinDistance: 11.881188
   MaxDistance: 12
   Pan2D: 0
   rolloffMode: 1
