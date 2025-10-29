@@ -22,9 +22,8 @@ public class NarrationTextBarSafe : MonoBehaviour
     public float holdSeconds = 1.5f;
 
     [Header("Visibility Options")]
-    public bool autoHideOnStart = false;   // ★ 시작 시 자동 숨김 여부(기본 꺼짐)
-    public bool deactivateOnHide = false;  // 숨김 시 GameObject 비활성화
-
+    public bool autoHideOnStart = false;   
+    public bool deactivateOnHide = false;  
     Coroutine co;
 
     void Awake()

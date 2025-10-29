@@ -1,3 +1,4 @@
+ï»¿// RoomDoor.cs (êµì²´ë³¸: 'ë¨í”„ ê²€ì‚¬' ì¶”ê°€)
 using System.Collections;
 using UnityEngine;
 
@@ -5,122 +6,118 @@ public class RoomDoor : MonoBehaviour
 {
     [Header("Who/Where")]
     public string playerTag = "Player";
-    public Transform targetSpawn;          // ¿·¹æÀÇ ½ºÆù ÁöÁ¡(¹Ù´Ú¿¡ µÎ¼¼¿ä)
+    public Transform targetSpawn;          // ì˜†ë°© ìŠ¤í°
 
     [Header("Facing on Arrival")]
-    public FacingMode facingMode = FacingMode.FaceAwayFromDoor; // ±âº»: ¹®À» µîÁü
-    public float forwardOffset = 0.25f;    // µµÂø ÁöÁ¡¿¡¼­ ¾ÕÂÊÀ¸·Î Á¶±İ ¹Ğ¾î Ãæµ¹ ¹æÁö
+    public FacingMode facingMode = FacingMode.FaceAwayFromDoor;
+    public float forwardOffset = 0.25f;
 
     [Header("Safety")]
-    public float cooldown = 0.5f;          // ¹® Æ¨±è/Áßº¹ Æ®¸®°Å ¹æÁö
-    public float fadeSeconds = 0.25f;      // 0ÀÌ¸é ÆäÀÌµå ¾È ÇÔ
-
+    public float cooldown = 0.5f;
+    public float fadeSeconds = 0.25f;
     float lastTime;
+
+    [Header("Lock by Lamp")]
+    public bool requireLampOn = true;                // â† ë¨í”„ í•„ìš” ì—¬ë¶€
+    public IndicatorLamp gateLamp;                   // â† ì´ ë¨í”„ê°€ ì¼œì ¸ ìˆì–´ì•¼ í†µê³¼
+    public NarrationTextBarSafe textBar;             // â† (ì„ íƒ) ì ê¹€ ì•ˆë‚´ ë¬¸êµ¬
+    public string lockedText = "ì „ì›ì´ ë¶€ì¡±í•´ ë¬¸ì´ ì—´ë¦¬ì§€ ì•ŠëŠ”ë‹¤.";
+    public float lockedNudgeBack = 0.2f;             // ì ê¹€ ë•Œ ì‚´ì§ ë°€ì–´ë‚´ê¸°
+    public AudioSource sfx;                          // (ì„ íƒ) ì ê¹€ ì‚¬ìš´ë“œ
+    public AudioClip lockedClip;                     // (ì„ íƒ)
 
     public enum FacingMode
     {
-        UseTargetForward,     // targetSpawnÀÇ ¹Ù¶óº¸´Â ¹æÇâÀ¸·Î ¼±´Ù
-        FaceAwayFromDoor,     // ÀÌ ¹®(door)ÀÇ forward ¹æÇâÀ¸·Î ¼±´Ù(¹®À» µîÁü)
-        FaceTowardDoor        // ¹®À» ¹Ù¶óº¸°Ô ¼±´Ù(µîÁüÀÇ ¹İ´ë)
+        UseTargetForward,
+        FaceAwayFromDoor,
+        FaceTowardDoor
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(playerTag)) return;
         if (Time.time - lastTime < cooldown) return;
-        lastTime = Time.time;
 
+        // ğŸ”’ ë¨í”„ ê²€ì‚¬
+        if (requireLampOn)
+        {
+            bool ok = (gateLamp != null && gateLamp.IsOn);
+            if (!ok)
+            {
+                // ì ê¹€ í”¼ë“œë°±
+                if (textBar) textBar.ShowNarration(lockedText, 1.2f);
+                if (sfx && lockedClip) sfx.PlayOneShot(lockedClip);
+
+                // í”Œë ˆì´ì–´ë¥¼ ë¬¸ì—ì„œ ì‚´ì§ ë’¤ë¡œ ë°€ì–´ì„œ 'ë§‰íŒ ëŠë‚Œ'
+                Vector3 pushDir = -transform.forward; pushDir.y = 0f; pushDir.Normalize();
+                var tr = other.transform;
+                tr.position += pushDir * lockedNudgeBack;
+                Physics.SyncTransforms();
+
+                lastTime = Time.time; // ì—°íƒ€ ë°©ì§€
+                return;               // âŒ í…”ë ˆí¬íŠ¸ ê¸ˆì§€
+            }
+        }
+
+        // âœ… í†µê³¼ ê°€ëŠ¥
+        lastTime = Time.time;
         StartCoroutine(Teleport(other.transform));
     }
 
     IEnumerator Teleport(Transform player)
     {
-        // (¼±ÅÃ) ÆäÀÌµå ¾Æ¿ô
-        var cg = FindObjectOfType<CanvasGroup>(); // Overlay CanvasGroupÀ» ¿¬°áÇØµÎ¸é ÁÁ¾Æ¿ä
+        var cg = FindObjectOfType<CanvasGroup>();
         if (cg && fadeSeconds > 0f) yield return Fade(cg, 0f, 1f, fadeSeconds);
 
-        // ¿øÇÏ´Â È¸Àü °è»ê(¹Ù´Ú¸é(Y¸¸ À¯Áö))
         Quaternion rot = ComputeArrivalRotation();
-
-        // À§Ä¡/È¸Àü Àû¿ë
         Vector3 pos = targetSpawn ? targetSpawn.position : transform.position;
-        pos += ProjectOnPlane(rot * Vector3.forward, Vector3.up) * forwardOffset; // ¹®¿¡¼­ ÇÑ ¹ßÂ¦ ¾ÕÀ¸·Î
+        pos += ProjectOnPlane(rot * Vector3.forward, Vector3.up) * forwardOffset;
 
-        // ¹°¸® ¾ÈÀü: Rigidbody°¡ ÀÖ´Ù¸é ¼Óµµ 0
         var rb = player.GetComponent<Rigidbody>();
         if (rb) { rb.velocity = Vector3.zero; rb.angularVelocity = Vector3.zero; }
 
-        // Àû¿ë + Æ®·£½ºÆû µ¿±âÈ­
         player.SetPositionAndRotation(pos, rot);
         Physics.SyncTransforms();
 
-        // (¼±ÅÃ) ¹æ È°¼ºÈ­ °ü¸®
         FindObjectOfType<RoomManager>()?.OnEnterRoom(targetSpawn ? targetSpawn.parent?.name : null);
 
-        // ÅÚ·¹Æ÷Æ® Á÷ÈÄ F ÀÜ»ó ÀÔ·Â ¹«½Ã (ÀÖ´Ù¸é)
         var prompt = FindObjectOfType<ElevatorAimPromptAndTalk>();
         prompt?.BlockInputForTeleport();
 
-        // (¼±ÅÃ) ÆäÀÌµå ÀÎ
         if (cg && fadeSeconds > 0f) yield return Fade(cg, 1f, 0f, fadeSeconds);
     }
 
     Quaternion ComputeArrivalRotation()
     {
-        Vector3 dir;
-
-        switch (facingMode)
+        Vector3 dir = facingMode switch
         {
-            case FacingMode.UseTargetForward:
-                dir = targetSpawn ? targetSpawn.forward : transform.forward;
-                break;
-
-            case FacingMode.FaceAwayFromDoor:
-            
-                dir = transform.forward;
-                break;
-
-            default: // FacingMode.FaceTowardDoor
-                dir = -transform.forward;
-                break;
-        }
-
-        // ¹Ù´Ú¿¡ Åõ¿µÇØ X/Z ±â¿ï¾îÁü Á¦°Å
+            FacingMode.UseTargetForward => (targetSpawn ? targetSpawn.forward : transform.forward),
+            FacingMode.FaceAwayFromDoor => transform.forward,
+            _ => -transform.forward
+        };
         dir = ProjectOnPlane(dir, Vector3.up).normalized;
         if (dir.sqrMagnitude < 0.0001f) dir = Vector3.forward;
-
         return Quaternion.LookRotation(dir, Vector3.up);
     }
 
-    static Vector3 ProjectOnPlane(Vector3 v, Vector3 n)
-    {
-        return v - Vector3.Dot(v, n) * n;
-    }
+    static Vector3 ProjectOnPlane(Vector3 v, Vector3 n) => v - Vector3.Dot(v, n) * n;
 
     IEnumerator Fade(CanvasGroup g, float a, float b, float d)
     {
         float t = 0f;
-        while (t < d)
-        {
-            t += Time.deltaTime;
-            g.alpha = Mathf.Lerp(a, b, t / d);
-            yield return null;
-        }
+        while (t < d) { t += Time.deltaTime; g.alpha = Mathf.Lerp(a, b, t / d); yield return null; }
         g.alpha = b;
     }
 
 #if UNITY_EDITOR
     void OnDrawGizmosSelected()
     {
-        // µµÂø ÁöÁ¡/¹æÇâ °¡½ÃÈ­
         Gizmos.color = Color.cyan;
         var rot = Application.isPlaying ? ComputeArrivalRotation()
                                         : (facingMode == FacingMode.FaceAwayFromDoor ? transform.rotation
                                                                                      : Quaternion.LookRotation(-transform.forward, Vector3.up));
-
         Vector3 p = targetSpawn ? targetSpawn.position : transform.position;
         Vector3 dir = ProjectOnPlane(rot * Vector3.forward, Vector3.up).normalized;
-
         Gizmos.DrawWireSphere(p, 0.1f);
         Gizmos.DrawLine(p, p + dir * 0.8f);
         Gizmos.DrawWireSphere(p + dir * forwardOffset, 0.06f);

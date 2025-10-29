@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // ── Aiming 중이면 이동/회전/애니메이션 Speed 막기 ───────────────
+        
         bool blockByAiming = (animDriver != null && animDriver.IsAimingActive);
         if (blockByAiming)
         {
@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
 
             return; // 회전도 차단
         }
-        // ─────────────────────────────────────────────────────────────
 
         // 입력 (WASD)
         float h = Input.GetAxisRaw("Horizontal");
