@@ -3100,7 +3100,7 @@ MonoBehaviour:
   elevatorInteriorSceneName: InElevator
   nextStageSceneName: B4
   nextStageBuildIndex: -1
-  rideSeconds: 5
+  rideSeconds: 3
   fadeSeconds: 0.35
   extraDistanceCheck: 0
 --- !u!1 &827953992
