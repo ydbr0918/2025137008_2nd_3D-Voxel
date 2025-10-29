@@ -25,7 +25,7 @@ public class TutorialController : MonoBehaviour
 
     // 입력 플래그
     bool w, a, s, d;
-    bool viewSwitched, sprinted, shot, picked;
+    bool viewSwitched, sprinted;
 
     enum Step { FadeIn, Welcome, MoveWASD, SwitchView, Sprint, PickupGun, Shoot, FinalToast, Done }
     Step step = Step.FadeIn;
@@ -66,13 +66,7 @@ public class TutorialController : MonoBehaviour
         if (overlay) { overlay.alpha = 1f; overlay.interactable = true; overlay.blocksRaycasts = true; }
         if (pausePanel) pausePanel.SetActive(false);
 
-        // 총 아이템 완료 콜백 연결(있을 때만)
-        if (gunItem)
-        {
-            if (rightHand) { gunItem.attachParent = rightHand; }
-            gunItem.SetOnPicked(() => { picked = true; });
-        }
-
+      
         StartCoroutine(Run());
     }
 
@@ -101,10 +95,7 @@ public class TutorialController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.LeftShift)) sprinted = true;
         }
-        if (step == Step.Shoot || step > Step.Shoot)
-        {
-            if (Input.GetMouseButtonDown(0)) shot = true;
-        }
+       
     }
 
     IEnumerator Run()
@@ -156,22 +147,7 @@ public class TutorialController : MonoBehaviour
         sprinted = false;
         while (!sprinted) yield return null;
 
-        // 6) F로 총 줍기 (총 아이템이 없으면 이 단계 건너뜀)
-        if (gunItem)
-        {
-            step = Step.PickupGun;
-            yield return ui.ShowText("F를 눌러 총 아이템을 주워보자.", uiFadeSeconds);
-            yield return ui.HideText(uiFadeSeconds);
-            picked = false;
-            while (!picked) yield return null;
-        }
-
-        // 7) 사격
-        step = Step.Shoot;
-        yield return ui.ShowText("좌클릭(LMB)으로 사격해봐.", uiFadeSeconds);
-        yield return ui.HideText(uiFadeSeconds);
-        shot = false;
-        while (!shot) yield return null;
+     
 
         // 8) 마지막 토스트
         step = Step.FinalToast;

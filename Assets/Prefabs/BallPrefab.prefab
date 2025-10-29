@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3805533293013435562}
   - component: {fileID: 3254224464926939616}
   - component: {fileID: 7115529260555356056}
+  - component: {fileID: -6422891014905380385}
   m_Layer: 0
   m_Name: BallPrefab
   m_TagString: Untagged
@@ -82,6 +83,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 4
   m_CollisionDetection: 0
+--- !u!114 &-6422891014905380385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8104321107864915637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55f83e008ae225a4ca1816802c29c37d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triggerTag: Player
+  reloadDelay: 0.2
 --- !u!1001 &1733898188261717793
 PrefabInstance:
   m_ObjectHideFlags: 0

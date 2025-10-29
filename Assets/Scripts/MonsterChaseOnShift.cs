@@ -30,4 +30,19 @@ public class MonsterChaseOnShift : MonoBehaviour
             transform.position += (target - transform.position).normalized * spd * Time.deltaTime;
         }
     }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            PlayerRespawn.Respawn(other.gameObject);
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            PlayerRespawn.Respawn(collision.collider.gameObject);
+        }
+    }
 }

@@ -24,4 +24,20 @@ public class MonsterChaseUntilLever : MonoBehaviour
             transform.position += dir * moveSpeed * Time.deltaTime;
         }
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            GameReset.ReloadCurrentScene();
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            GameReset.ReloadCurrentScene();
+        }
+    }
 }

@@ -89,12 +89,18 @@ public class MonsterChaser : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(playerTag)) Destroy(other.gameObject);
+        if (other.CompareTag("Player"))
+        {
+            GameReset.ReloadCurrentScene();
+        }
     }
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag(playerTag)) Destroy(collision.collider.gameObject);
+        if (collision.collider.CompareTag("Player"))
+        {
+            GameReset.ReloadCurrentScene();
+        }
     }
 
 #if UNITY_EDITOR

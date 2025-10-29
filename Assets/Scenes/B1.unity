@@ -466,9 +466,9 @@ MonoBehaviour:
   muzzle: {fileID: 360328829}
   cannonballPrefab: {fileID: 8104321107864915637, guid: a99c6ddfede626f4d99e30d29f033895,
     type: 3}
-  projectileSpeed: 10
-  fireIntervalMin: 0.6
-  fireIntervalMax: 2
+  projectileSpeed: 5
+  fireIntervalMin: 1
+  fireIntervalMax: 3
   normalMaterial: {fileID: 0}
   overheatMaterial: {fileID: 0}
   visualRenderer: {fileID: 0}
@@ -1164,9 +1164,9 @@ MonoBehaviour:
   muzzle: {fileID: 1481334717}
   cannonballPrefab: {fileID: 8104321107864915637, guid: a99c6ddfede626f4d99e30d29f033895,
     type: 3}
-  projectileSpeed: 10
-  fireIntervalMin: 0.6
-  fireIntervalMax: 2
+  projectileSpeed: 5
+  fireIntervalMin: 1
+  fireIntervalMax: 3
   normalMaterial: {fileID: 0}
   overheatMaterial: {fileID: 0}
   visualRenderer: {fileID: 0}
@@ -1565,9 +1565,9 @@ MonoBehaviour:
   muzzle: {fileID: 1805035167}
   cannonballPrefab: {fileID: 8104321107864915637, guid: a99c6ddfede626f4d99e30d29f033895,
     type: 3}
-  projectileSpeed: 10
-  fireIntervalMin: 0.6
-  fireIntervalMax: 2
+  projectileSpeed: 5
+  fireIntervalMin: 1
+  fireIntervalMax: 3
   normalMaterial: {fileID: 0}
   overheatMaterial: {fileID: 0}
   visualRenderer: {fileID: 0}
@@ -1699,9 +1699,9 @@ MonoBehaviour:
   muzzle: {fileID: 1904713585}
   cannonballPrefab: {fileID: 8104321107864915637, guid: a99c6ddfede626f4d99e30d29f033895,
     type: 3}
-  projectileSpeed: 10
-  fireIntervalMin: 0.6
-  fireIntervalMax: 2
+  projectileSpeed: 5
+  fireIntervalMin: 1
+  fireIntervalMax: 3
   normalMaterial: {fileID: 0}
   overheatMaterial: {fileID: 0}
   visualRenderer: {fileID: 0}
@@ -1833,9 +1833,9 @@ MonoBehaviour:
   muzzle: {fileID: 1977388698}
   cannonballPrefab: {fileID: 8104321107864915637, guid: a99c6ddfede626f4d99e30d29f033895,
     type: 3}
-  projectileSpeed: 10
-  fireIntervalMin: 0.6
-  fireIntervalMax: 2
+  projectileSpeed: 5
+  fireIntervalMin: 1
+  fireIntervalMax: 3
   normalMaterial: {fileID: 0}
   overheatMaterial: {fileID: 0}
   visualRenderer: {fileID: 0}
