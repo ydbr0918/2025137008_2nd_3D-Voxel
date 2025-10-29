@@ -42,6 +42,8 @@ public class LeverCloseDoor : MonoBehaviour
     bool looking = false;
     float lastSeen = -999f;
 
+    public bool Activated { get; private set; }
+
     void Awake()
     {
         if (!cam) cam = Camera.main;
@@ -95,12 +97,9 @@ public class LeverCloseDoor : MonoBehaviour
 
     IEnumerator DoPull()
     {
+        Activated = true;
         used = oneShot ? true : used;
-
-        // 프롬프트 끄기
         if (promptText) promptText.gameObject.SetActive(false);
-
-        // 레버 시각/사운드
         if (sfx && pullClip) sfx.PlayOneShot(pullClip);
         if (handle)
         {
@@ -116,8 +115,6 @@ public class LeverCloseDoor : MonoBehaviour
             }
             handle.localRotation = to;
         }
-
-        // 문 닫기
         if (door) door.Close();
         if (sfx && doorCloseClip) sfx.PlayOneShot(doorCloseClip);
     }

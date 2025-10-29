@@ -10,8 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1174886584220569136}
   - component: {fileID: 8329719078275291030}
-  - component: {fileID: 1369778269834741002}
-  - component: {fileID: 140784691496867169}
+  - component: {fileID: -4321347719093807520}
   m_Layer: 0
   m_Name: Bullet
   m_TagString: Bullet
@@ -57,33 +56,12 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &1369778269834741002
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3407093453325553492}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &140784691496867169
+--- !u!114 &-4321347719093807520
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,15 +70,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 3407093453325553492}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa4f0fc49e3e8134abde241563f2b47e, type: 3}
+  m_Script: {fileID: 11500000, guid: 556dd80c1a6c45647a81a359800f6e26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 40
-  lifeSeconds: 3
-  damage: 10
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 0
+  speed: 30
+  lifeTime: 3
+  hitDestroyDelay: 0
 --- !u!1 &6199595712069703786
 GameObject:
   m_ObjectHideFlags: 0
@@ -112,7 +87,6 @@ GameObject:
   - component: {fileID: 2950104871713962082}
   - component: {fileID: 4442569862984192598}
   - component: {fileID: 206692616326267399}
-  - component: {fileID: 6998376463210467783}
   m_Layer: 0
   m_Name: r
   m_TagString: Untagged
@@ -185,26 +159,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &6998376463210467783
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6199595712069703786}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
