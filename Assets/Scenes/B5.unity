@@ -1402,7 +1402,7 @@ GameObject:
   - component: {fileID: 432410720}
   - component: {fileID: 432410719}
   - component: {fileID: 432410718}
-  - component: {fileID: 432410717}
+  - component: {fileID: 432410722}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -1410,24 +1410,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &432410717
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 432410716}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b84a988a5b1e33478fc2033d79db622, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTag: Player
-  targetSpawn: {fileID: 561754570}
-  facingMode: 0
-  forwardOffset: 0.25
-  cooldown: 0.5
-  fadeSeconds: 0.25
 --- !u!65 &432410718
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1514,6 +1496,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 517033844}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &432410722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432410716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b66919648d6e44b9d9460b7bef82f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTag: Player
+  targetSpawn: {fileID: 561754570}
+  facingMode: 3
+  forwardOffset: 0.25
+  cooldown: 0.5
+  fadeSeconds: 0.25
+  blockElevatorPrompt: 1
 --- !u!1 &441522464
 GameObject:
   m_ObjectHideFlags: 0
@@ -2200,7 +2201,7 @@ GameObject:
   - component: {fileID: 569118788}
   - component: {fileID: 569118787}
   - component: {fileID: 569118786}
-  - component: {fileID: 569118785}
+  - component: {fileID: 569118790}
   m_Layer: 0
   m_Name: Door (1)
   m_TagString: Untagged
@@ -2208,24 +2209,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &569118785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 569118784}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b84a988a5b1e33478fc2033d79db622, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTag: Player
-  targetSpawn: {fileID: 2017903219}
-  facingMode: 0
-  forwardOffset: 0.25
-  cooldown: 0.5
-  fadeSeconds: 0.25
 --- !u!65 &569118786
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2312,6 +2295,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 517033844}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!114 &569118790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569118784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b66919648d6e44b9d9460b7bef82f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTag: Player
+  targetSpawn: {fileID: 2017903219}
+  facingMode: 3
+  forwardOffset: 0.25
+  cooldown: 0.5
+  fadeSeconds: 0.25
+  blockElevatorPrompt: 1
 --- !u!1 &598826452
 GameObject:
   m_ObjectHideFlags: 0
@@ -3267,7 +3269,7 @@ GameObject:
   - component: {fileID: 835794214}
   - component: {fileID: 835794213}
   - component: {fileID: 835794212}
-  - component: {fileID: 835794211}
+  - component: {fileID: 835794215}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -3290,24 +3292,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 445935033}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &835794211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 835794209}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b84a988a5b1e33478fc2033d79db622, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTag: Player
-  targetSpawn: {fileID: 1086113868}
-  facingMode: 0
-  forwardOffset: 0.25
-  cooldown: 0.5
-  fadeSeconds: 0.25
 --- !u!65 &835794212
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3379,6 +3363,25 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 835794209}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &835794215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 835794209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b66919648d6e44b9d9460b7bef82f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTag: Player
+  targetSpawn: {fileID: 1086113868}
+  facingMode: 3
+  forwardOffset: 0.25
+  cooldown: 0.5
+  fadeSeconds: 0.25
+  blockElevatorPrompt: 1
 --- !u!1001 &848475816
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5369,7 +5372,7 @@ GameObject:
   - component: {fileID: 1626126001}
   - component: {fileID: 1626126000}
   - component: {fileID: 1626125999}
-  - component: {fileID: 1626125998}
+  - component: {fileID: 1626126003}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -5377,24 +5380,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1626125998
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1626125997}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b84a988a5b1e33478fc2033d79db622, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTag: Player
-  targetSpawn: {fileID: 395488171}
-  facingMode: 0
-  forwardOffset: 0.25
-  cooldown: 0.5
-  fadeSeconds: 0.25
 --- !u!65 &1626125999
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5481,6 +5466,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 405719032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1626126003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626125997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b66919648d6e44b9d9460b7bef82f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTag: Player
+  targetSpawn: {fileID: 395488171}
+  facingMode: 3
+  forwardOffset: 0.25
+  cooldown: 0.5
+  fadeSeconds: 0.25
+  blockElevatorPrompt: 1
 --- !u!23 &1630427535 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 8750159878725461236, guid: 572c7e001d6dc4d4f80c26e1bb513a22,
@@ -6003,7 +6007,7 @@ GameObject:
   - component: {fileID: 1892164094}
   - component: {fileID: 1892164093}
   - component: {fileID: 1892164092}
-  - component: {fileID: 1892164091}
+  - component: {fileID: 1892164095}
   m_Layer: 0
   m_Name: Door (1)
   m_TagString: Untagged
@@ -6026,24 +6030,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 445935033}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!114 &1892164091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1892164089}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b84a988a5b1e33478fc2033d79db622, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerTag: Player
-  targetSpawn: {fileID: 19314607}
-  facingMode: 0
-  forwardOffset: 0.25
-  cooldown: 0.5
-  fadeSeconds: 0.25
 --- !u!65 &1892164092
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6115,6 +6101,25 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1892164089}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1892164095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1892164089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17b66919648d6e44b9d9460b7bef82f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTag: Player
+  targetSpawn: {fileID: 19314607}
+  facingMode: 3
+  forwardOffset: 0.25
+  cooldown: 0.5
+  fadeSeconds: 0.25
+  blockElevatorPrompt: 1
 --- !u!1 &1902968079
 GameObject:
   m_ObjectHideFlags: 0
@@ -6230,15 +6235,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1902968079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b84a988a5b1e33478fc2033d79db622, type: 3}
+  m_Script: {fileID: 11500000, guid: 17b66919648d6e44b9d9460b7bef82f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   playerTag: Player
   targetSpawn: {fileID: 441522465}
-  facingMode: 0
+  facingMode: 3
   forwardOffset: 0.25
   cooldown: 0.5
   fadeSeconds: 0.25
+  blockElevatorPrompt: 1
 --- !u!1 &1918690552
 GameObject:
   m_ObjectHideFlags: 0
