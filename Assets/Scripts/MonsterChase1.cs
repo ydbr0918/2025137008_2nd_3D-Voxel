@@ -85,7 +85,15 @@ public class MonsterChase1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Destroy(other.gameObject);
+            PlayerRespawn.Respawn(other.gameObject);
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            PlayerRespawn.Respawn(collision.collider.gameObject);
         }
     }
 }
