@@ -1,3 +1,6 @@
+// MinigameInteractable.cs
+// 에임이 대상에 닿으면 [F] 프롬프트를 안정적으로 표시하고,
+// F를 누르면 미니게임 패널을 열어 플레이어 조작을 잠그는 스크립트.
 using UnityEngine;
 using TMPro;
 
@@ -5,78 +8,114 @@ using TMPro;
 public class MinigameInteractable : MonoBehaviour
 {
     [Header("Raycast")]
-    public Camera cam;                      // 비워두면 Camera.main
-    public float maxDistance = 3.0f;        // 상호작용 거리
-    public LayerMask hitMask = ~0;          // 맞출 레이어(기본 Everything)
+    public Camera cam;                          // 비우면 Camera.main
+    [Range(0.5f, 10f)] public float maxDistance = 3.0f;
+    public LayerMask hitMask = ~0;              // 권장: Interactable만 체크
+
+    [Header("Aim Stability")]
+    [Tooltip("중앙 레이 대신 구체 캐스트 반지름(조준 완화)")]
+    public float aimRadius = 0.12f;
+    [Tooltip("한 번 맞춘 뒤 이 시간(초) 동안은 프롬프트 유지(깜빡임 방지)")]
+    public float holdGraceSeconds = 0.15f;
 
     [Header("Prompt UI")]
-    public TMP_Text promptText;             // 화면 중앙 [F] 열기 텍스트
+    public TMP_Text promptText;                 // [F] 열기 텍스트 (씬 오브젝트!)
     public string promptLine = "[F] 열기";
 
     [Header("Open Minigame")]
-    public GameObject minigamePanel;        // TimingLockMinigame가 들어있는 패널(비활성 시작 권장)
+    public GameObject minigamePanel;            // 미니게임 패널(비활성 시작 권장)
     public KeyCode useKey = KeyCode.F;
-    public bool lockPlayerWhileOpen = true; // 열려있는 동안 플레이어 조작 잠금
-    public MonoBehaviour[] playerControlScriptsToDisable; // PlayerController, MouseLook 등
+    public bool lockPlayerWhileOpen = true;     // 열려있는 동안 플레이어 조작 잠금
+    public MonoBehaviour[] playerControlScriptsToDisable; // PlayerController, 카메라 컨트롤 등
 
     [Header("Cursor Handling")]
     public bool showMouseCursorWhenOpen = true;
+
+    [Header("Prompt Fix (Optional)")]
+    [Tooltip("프롬프트가 보이지 않을 때 최상단/알파 보정")]
+    public bool forceVisibleFix = true;
+    public int bringToFrontSibling = 9999;
 
     // 내부 상태
     bool lookingAtMe = false;
     bool isOpen = false;
     bool readyForPress = true;
+    float lastSeenTime = -999f;
 
     void Awake()
     {
         if (!cam) cam = Camera.main;
-        if (promptText) promptText.gameObject.SetActive(false);
         if (minigamePanel) minigamePanel.SetActive(false);
+        if (promptText) promptText.gameObject.SetActive(false);
     }
 
     void Update()
     {
         UpdateAim();
 
+        // 상호작용 키
         if (lookingAtMe && readyForPress && Input.GetKeyDown(useKey))
         {
             OpenPanel();
             readyForPress = false; // 같은 프레임 중복 방지
         }
-
         if (!Input.GetKey(useKey)) readyForPress = true;
 
-        // ESC로 닫기(선택)
+        // ESC로 닫기(원하면)
         if (isOpen && Input.GetKeyDown(KeyCode.Escape))
             ClosePanel();
     }
 
     void UpdateAim()
     {
-        bool hitMe = false;
+        bool seenThisFrame = false;
 
         if (cam)
         {
-            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-            if (Physics.Raycast(ray, out RaycastHit hit, maxDistance, hitMask, QueryTriggerInteraction.Collide))
+            // 화면 중앙에서 스피어캐스트(조준 완화)
+            Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+            if (Physics.SphereCast(ray, aimRadius, out RaycastHit hit, maxDistance, hitMask, QueryTriggerInteraction.Collide))
             {
-                // 내가 맞았거나 내 자식/부모를 맞았는지
-                var mine = GetComponent<Collider>();
-                if (hit.collider && (hit.collider == mine ||
-                    hit.collider.GetComponentInParent<MinigameInteractable>() == this))
+                var interactable = hit.collider.GetComponentInParent<MinigameInteractable>();
+                if (interactable == this)
                 {
-                    hitMe = true;
+                    seenThisFrame = true;
+                    lastSeenTime = Time.time;
                 }
             }
         }
 
-        if (promptText)
-        {
-            promptText.gameObject.SetActive(hitMe && !isOpen);
-            if (hitMe) promptText.text = promptLine;
-        }
-
+        // 최근 본 지 잠깐 동안은 계속 보고 있는 것으로 처리(깜빡임 방지)
+        bool hitMe = seenThisFrame || (Time.time - lastSeenTime <= holdGraceSeconds);
         lookingAtMe = hitMe;
+
+        // ===== 프롬프트 표시/숨김 =====
+        if (!promptText) return;
+
+        if (hitMe && !isOpen)
+        {
+            if (!promptText.gameObject.activeSelf)
+                promptText.gameObject.SetActive(true);
+
+            if (promptText.text != promptLine)
+                promptText.text = promptLine;
+
+            if (forceVisibleFix)
+            {
+                // 알파/정렬/겹침 보정
+                var c = promptText.color; c.a = 1f; promptText.color = c;
+
+                var cg = promptText.GetComponentInParent<CanvasGroup>();
+                if (cg) { cg.alpha = 1f; cg.blocksRaycasts = false; cg.interactable = false; }
+
+                promptText.rectTransform.SetSiblingIndex(bringToFrontSibling);
+            }
+        }
+        else
+        {
+            if (promptText.gameObject.activeSelf)
+                promptText.gameObject.SetActive(false);
+        }
     }
 
     public void OpenPanel()
@@ -87,14 +126,12 @@ public class MinigameInteractable : MonoBehaviour
         if (promptText) promptText.gameObject.SetActive(false);
         if (minigamePanel) minigamePanel.SetActive(true);
 
-        // 플레이어 조작 잠그기
         if (lockPlayerWhileOpen)
         {
             foreach (var s in playerControlScriptsToDisable)
                 if (s) s.enabled = false;
         }
 
-        // 커서 보이기
         if (showMouseCursorWhenOpen)
         {
             Cursor.visible = true;
@@ -109,20 +146,14 @@ public class MinigameInteractable : MonoBehaviour
 
         if (minigamePanel) minigamePanel.SetActive(false);
 
-        // 플레이어 조작 되돌리기
         if (lockPlayerWhileOpen)
         {
             foreach (var s in playerControlScriptsToDisable)
                 if (s) s.enabled = true;
         }
-
-        // 커서 원상(원하면 프로젝트 정책에 맞게 조정)
-        // 여기서는 굳이 잠그지 않고, 외부 카메라 스크립트가 관리하도록 둠.
+        // 커서 복구 정책은 프로젝트 전반 룰에 맞춰 외부에서 관리해도 OK
     }
 
-    // TimingLockMinigame의 OnUnlocked 이벤트에서 호출하면 편한 헬퍼
-    public void CloseAfterSuccess()
-    {
-        ClosePanel();
-    }
+    // 미니게임 성공 이벤트에서 호출
+    public void CloseAfterSuccess() => ClosePanel();
 }
