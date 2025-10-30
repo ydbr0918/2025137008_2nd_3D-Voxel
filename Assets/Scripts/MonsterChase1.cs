@@ -6,48 +6,88 @@ using UnityEngine;
 public class MonsterChase1 : MonoBehaviour
 {
     public Transform player;
+    public string playerTag = "Player";
     public float detectRadius = 8f;
     public float moveSpeed = 3f;
     public float stopDistance = 1.2f;
     public float ringYOffset = 0.02f;
     public int ringSegments = 64;
     public float ringWidth = 0.05f;
+    public Material ringMaterial;
+    public Color ringColor = new Color(1, 0, 0, 0.7f);
+    public float reacquireInterval = 1f;
 
     LineRenderer lr;
     Rigidbody rb;
     CapsuleCollider col;
     Vector3[] points;
+    float nextReacquire;
+    float prevRadius, prevYOffset, prevWidth;
+    int prevSegments;
 
     void Awake()
     {
         lr = GetComponent<LineRenderer>();
         rb = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
+
         rb.isKinematic = true;
         rb.useGravity = false;
         col.isTrigger = true;
+
         lr.useWorldSpace = false;
         lr.loop = true;
-        lr.positionCount = ringSegments;
+        lr.positionCount = Mathf.Max(8, ringSegments);
         lr.startWidth = ringWidth;
         lr.endWidth = ringWidth;
         lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
         lr.receiveShadows = false;
-        if (lr.sharedMaterial == null)
-        {
-            var mat = new Material(Shader.Find("Unlit/Color"));
-            mat.color = new Color(1, 0, 0, 0.7f);
-            lr.material = mat;
-        }
-        points = new Vector3[ringSegments];
+        if (ringMaterial != null) lr.material = ringMaterial;
+        lr.startColor = ringColor;
+        lr.endColor = ringColor;
+
+        points = new Vector3[lr.positionCount];
         BuildRing();
+
+        if (player == null) TryAcquirePlayer();
+        CacheRingParams();
+    }
+
+    void Update()
+    {
+        if (player == null && Time.time >= nextReacquire) TryAcquirePlayer();
+
+        if (player != null)
+        {
+            Vector3 target = new Vector3(player.position.x, transform.position.y, player.position.z);
+            float dist = Vector3.Distance(transform.position, target);
+            if (dist <= detectRadius && dist > stopDistance)
+            {
+                transform.LookAt(target);
+                Vector3 dir = (target - transform.position).normalized;
+                transform.position += dir * moveSpeed * Time.deltaTime;
+            }
+        }
+
+        if (RingParamsChanged()) { ApplyRingParams(); BuildRing(); }
+    }
+
+    void TryAcquirePlayer()
+    {
+        var go = GameObject.FindWithTag(playerTag);
+        player = go ? go.transform : null;
+        nextReacquire = Time.time + reacquireInterval;
     }
 
     void BuildRing()
     {
-        float step = Mathf.PI * 2f / ringSegments;
+        int n = Mathf.Max(8, ringSegments);
+        if (lr.positionCount != n) lr.positionCount = n;
+        if (points == null || points.Length != n) points = new Vector3[n];
+
+        float step = Mathf.PI * 2f / n;
         float y = ringYOffset;
-        for (int i = 0; i < ringSegments; i++)
+        for (int i = 0; i < n; i++)
         {
             float a = step * i;
             float x = Mathf.Cos(a) * detectRadius;
@@ -57,28 +97,27 @@ public class MonsterChase1 : MonoBehaviour
         lr.SetPositions(points);
     }
 
-    void OnValidate()
+    void ApplyRingParams()
     {
-        if (ringSegments < 8) ringSegments = 8;
-        if (Application.isPlaying && lr != null)
-        {
-            lr.positionCount = ringSegments;
-            points = new Vector3[ringSegments];
-            BuildRing();
-        }
+        lr.startWidth = ringWidth;
+        lr.endWidth = ringWidth;
+        lr.startColor = ringColor;
+        lr.endColor = ringColor;
+        if (ringMaterial != null && lr.sharedMaterial != ringMaterial) lr.material = ringMaterial;
+        CacheRingParams();
     }
 
-    void Update()
+    void CacheRingParams()
     {
-        if (player == null) return;
-        Vector3 target = new Vector3(player.position.x, transform.position.y, player.position.z);
-        float dist = Vector3.Distance(transform.position, target);
-        if (dist <= detectRadius && dist > stopDistance)
-        {
-            transform.LookAt(target);
-            Vector3 dir = (target - transform.position).normalized;
-            transform.position += dir * moveSpeed * Time.deltaTime;
-        }
+        prevRadius = detectRadius;
+        prevYOffset = ringYOffset;
+        prevWidth = ringWidth;
+        prevSegments = ringSegments;
+    }
+
+    bool RingParamsChanged()
+    {
+        return prevRadius != detectRadius || prevYOffset != ringYOffset || prevWidth != ringWidth || prevSegments != ringSegments;
     }
 
     void OnTriggerEnter(Collider other)
@@ -97,5 +136,3 @@ public class MonsterChase1 : MonoBehaviour
         }
     }
 }
-
-
